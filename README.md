@@ -39,10 +39,21 @@ ATP has successfully proven out its core architectural objectives!
 *   **✅ Phase 3 (The Guardian):** Complete. Launched our live React Webview inside VS Code that continually monitors backend API telemetry endpoints automatically triggered by agents.
 *   **✅ Phase 4 (The Protocol):** Complete. Achieved full Universal Framework Support. Our `httpx` telemetry and wrapper functions transparently translate tools for **CrewAI**, **LangChain**, and **AutoGen v0.4** completely flawlessly.
 
-### 🛠️ Next Phase Roadmap
-We need to harden the protocol for scalable enterprise systems:
-*   **Phase 5 (Cloud Sync Matrix):** Transforming local SQLite instances into a cloud-agnostic Postgres schema for centralized observability dashboards accessible outside an IDE.
-*   **Phase 6 (Behavioral Guardrails):** Capturing historical anomaly telemetry via the Guardian system and injecting auto-generated instructions into subsequent system prompts, preventing an agent from committing the same logical parsing mistake twice on a specific tool.
+### 🛠️ Enterprise Architecture & Best Practices Roadmap
+We need to harden the protocol for scalable enterprise systems. Future updates will implement the **"Bring Your Own Database" (BYOD) Open-Source Model** (similar to Apache Airflow), decoupling our core Engine from the Storage layer.
+
+#### 1. Database Connection Management (FastAPI Best Practice)
+*   **Current State:** The system uses a globally instantiated `SessionLocal` object in `db.py` to handle database operations. Under massive concurrent multi-agent workloads, global sessions can lead to thread-safety issues and database file locks.
+*   **Future Implementation:** We will refactor `api.py` to implement **FastAPI Dependency Injection** (using `Depends(get_db)` generators). This architectural best practice guarantees that a fresh, isolated database connection is initialized for every single API request, and effectively guarantees the connection is safely closed when the request yields.
+
+#### 2. The BYOD Open-Source Data Plane (Phase 5)
+*   **Current State:** SQLite fallback databases are hardcoded locally.
+*   **Future Implementation:** ATP will intelligently query OS-level environment variables (e.g., `ATP_DATABASE_URL`). 
+    *   **Local Developers:** If unconfigured, the system retains its perfect zero-config quickstart using `sqlite:///atp_registry.db`.
+    *   **Enterprise Teams:** Businesses can point the variable to their internal corporate `postgresql://` RDS/Azure instances. ATP will dynamically build a high-concurrency SQLAlchemy engine, meaning the execution logs never touch our servers, ensuring total open-source business autonomy and privacy.
+
+#### 3. Behavioral Guardrails (Phase 6)
+*   Capturing historical anomaly telemetry via the Guardian system and injecting auto-generated instructions into subsequent system prompts, preventing an agent from committing the same logical parsing mistake twice on a specific tool.
 
 ---
 

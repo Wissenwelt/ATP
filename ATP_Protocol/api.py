@@ -7,7 +7,7 @@ from db import init_db, ATPToolRegistry, ATPExecutionLog
 app = FastAPI(title="ATP Guardian API", description="Observability backend for Agent Tool Protocol")
 
 # Initialize DB connection
-engine, SessionLocal = init_db()
+SessionLocal = init_db()
 
 # Dependency for DB session
 def get_db():

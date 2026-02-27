@@ -57,7 +57,7 @@ class ATPTranslator:
         # Setup DB Session
         try:
             from db import init_db, generate_manifest_hash, ATPToolRegistry
-            _, SessionLocal = init_db()
+            SessionLocal = init_db()
             db_session = SessionLocal()
         except ImportError:
             print("DB registry not available. Tools will not be registered.")

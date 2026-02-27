@@ -107,7 +107,9 @@ class ATPExecutionLog(Base):
     
     timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-def init_db(db_url: str = "sqlite:///atp_registry.db"):
+def init_db():
+    db_url = os.environ.get("ATP_DATABASE_URL", "sqlite:///atp_registry.db")
+    
     connect_args = {}
     if db_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False}
@@ -115,7 +117,7 @@ def init_db(db_url: str = "sqlite:///atp_registry.db"):
     engine = create_engine(db_url, echo=False, connect_args=connect_args)
     Base.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)
-    return engine, SessionLocal
+    return SessionLocal
 
 def generate_manifest_hash(server_name: str, tool_name: str, schema: dict) -> str:
     """Generates a stable hash for a tool manifest."""
@@ -124,7 +126,7 @@ def generate_manifest_hash(server_name: str, tool_name: str, schema: dict) -> st
 
 if __name__ == "__main__":
     print("Initializing ATP Registry Database schemas...")
-    _, SessionLocal = init_db()
+    SessionLocal = init_db()
     
     print("Checking database connection...")
     session = SessionLocal()
